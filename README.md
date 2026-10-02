@@ -12,6 +12,23 @@ no código, e tudo é cadastrado pela interface.
 > desligá-lo. Detalhes do procedimento e das limitações da OLT em
 > [docs/procedimento-zte-c320.md](docs/procedimento-zte-c320.md).
 
+## Instalação rápida
+
+No servidor MK-AUTH, **como root**, rode:
+
+```sh
+wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash
+```
+
+Pronto: o addon aparece no menu **PROVEDOR › ONUs ZTE - Firmware**. O mesmo comando também
+**atualiza** para a versão mais nova e **repara** uma instalação existente, sem perder
+configurações, senhas, inventário nem histórico.
+
+Depois, abra o addon e siga o [Primeiro acesso](#primeiro-acesso).
+
+**Requisitos:** MK-AUTH com PHP 8.0+ · OLT ZTE C320 com MVR V2.1.x acessível por telnet a partir
+do MK-AUTH · um servidor FTP (o firmware fica nele; a OLT o busca direto de lá).
+
 ## Telas
 
 | Tela | O que faz |
@@ -54,12 +71,24 @@ Navegador ─HTTP─▶ addon (MK-AUTH) ──FTP/FTPS (credencial do ADDON)─�
 No upgrade, a OLT busca o firmware **direto no FTP**, sem o arquivo passar pelo MK-AUTH. O
 addon só gerencia o repositório: upload, listagem, verificação e exclusão.
 
-## Instalação
+## Instalação (detalhes)
 
 ```sh
-# como root, no servidor MK-AUTH
+# instalar ou atualizar para a última versão (como root, no servidor MK-AUTH)
+wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash
+
+# só diagnosticar a instalação, sem mexer em nada
+wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash -s -- --diagnostico
+
+# instalar uma versão específica
+wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash -s -- --versao=v0.10.1
+
+# servidor sem acesso ao GitHub: baixe o pacote da página de Releases e instale localmente
 bash instalar.sh --pacote=zte_onu-0.10.1.tar.gz
 ```
+
+Outras opções: `--forcar` (reinstala mesmo atualizado), `--nao-interativo` (nunca pergunta;
+para instalação automatizada, com `ZTE_DB_USER`/`ZTE_DB_PASS`), `--ajuda`.
 
 O instalador:
 - confere o PHP 8.0+ e as extensões `pdo_mysql`, `sodium`, `mbstring` e `ftp` ou `curl`
@@ -72,10 +101,10 @@ O instalador:
 - aplica o schema (`sql/baseline.sql`, idempotente), depois de um dump das tabelas `tab_zte_*`;
 - acrescenta a linha do menu em `addons/addon.js` (PROVEDOR › ONUs ZTE - Firmware).
 
-Atualizar é rodar o mesmo comando com o pacote novo. Configuração, chave, dados e logs ficam
+Atualizar é rodar o mesmo comando de novo. Configuração, chave, dados e logs ficam
 fora da pasta do addon e são preservados.
 
-Diagnóstico sem mexer em nada: `bash instalar.sh --diagnostico`.
+Antes de cada atualização o instalador faz um dump das tabelas `tab_zte_*` em `/opt/mk-auth/bckp/zte_onu/`.
 
 ## Primeiro acesso
 

@@ -2,7 +2,7 @@
 #
 # zte_onu :: instalador do addon de gestao de firmware de ONUs ZTE para o MK-AUTH.
 #
-#   bash instalar.sh --pacote=zte_onu-0.1.0.tar.gz
+#   bash instalar.sh --pacote=zte_onu-0.10.1.tar.gz
 #   wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash
 #
 # O mesmo comando instala, atualiza e repara. Rode quantas vezes quiser: quando ja esta na
@@ -12,7 +12,7 @@
 # depois, pela tela do addon. O instalador so prepara banco, pastas, chave do cofre e menu.
 #
 # Opcoes (depois de "| bash -s --"):
-#   --versao=v0.1.0   instala uma versao especifica em vez da ultima publicada
+#   --versao=v0.10.1  instala uma versao especifica em vez da ultima publicada
 #   --pacote=ARQ.tar.gz  instala a partir de um pacote local (gerado pelo empacotar.sh), sem GitHub
 #   --forcar          reinstala mesmo estando atualizado
 #   --nao-interativo  nunca pergunta nada; falta de credencial vira erro
