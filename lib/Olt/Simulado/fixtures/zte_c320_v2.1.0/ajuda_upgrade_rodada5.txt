@@ -1,0 +1,54 @@
+# Fase 0, rodada 5 (01/10/2026). So "?". IP do FTP e SENHA REMOVIDOS (a senha apareceu em claro
+# na sessao original: a linha de comando da OLT recebe a senha, por isso a conta da OLT no FTP deve
+# ser propria e so de leitura).
+OLT-c320_1#file download version-ru ?
+  WORD  Specify file name to download (1-64 character(s))
+OLT-c320_1#file download version-ru WORD ?
+  device  the type of device
+  ftp     File transfer protocol
+  mng     Management interface
+  sftp    Secure file transfer protocol
+  tftp    Trivial file transfer protocol
+  vrf     VPN Routing/Forwarding instance name
+  <cr>
+OLT-c320_1#file download version-ru WORD ftp ?
+  ipaddress  ip address
+OLT-c320_1#file download version-ru WORD ftp ipaddress 192.0.2.10 ?
+  path  path of host
+  user  user name
+OLT-c320_1#file download version-ru WORD ftp ipaddress 192.0.2.10 user USUARIO ?
+  password  password
+OLT-c320_1#... user USUARIO password *** ?
+  <cr>
+OLT-c320_1#show file version-ru ?
+  device  the type of device
+  <cr>
+OLT-c320_1#show file version-ru device ?
+  flash   Flash device
+  sdcard  Sdcard device
+OLT-c320_1#show file version-ru device flash
+(saida vazia: nenhum firmware de ONU na flash)
+OLT-c320_1#show remote-unit task
+Task does not exist.
+OLT-c320_1#show remote-unit task ?
+  WORD  Specify task name (1-64 character(s))
+  <cr>
+OLT-c320_1#show remote-unit summary-of ?
+  manual  manual update status
+  task    Task update status
+OLT-c320_1#show remote-unit summary-of task WORD ?
+  fail       The position of RU  operate failed
+  operating  The position of RU operating
+  success    The position of RU operate successfully
+  <cr>
+OLT-c320_1#show remote-unit update-status ?
+  gpon-olt_1/1  Gpon-olt interface
+  gpon-olt_1/2  Gpon-olt interface
+OLT-c320_1#show remote-unit update-status gpon-olt_1/1/1 ?
+  <1-255>  ONU ID list
+OLT-c320_1#show remote-unit update-status gpon-olt_1/1/1 1
+(saida vazia: nenhuma atualizacao em andamento)
+OLT-c320_1(config)#remote-unit task ?
+  WORD  The task name of software version updating (1-64 character(s))
+OLT-c320_1(config)#remote-unit task word ?
+  <cr>

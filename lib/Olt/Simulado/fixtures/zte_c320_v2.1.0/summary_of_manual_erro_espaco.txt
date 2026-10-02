@@ -1,0 +1,18 @@
+Download:
+file f6201b_v9.3.10p7n9.bin  download error from remote server,
+ Reason:Remain space not enough
+
+Operating:
+
+
+
+Waiting:
+
+
+
+Fail:
+
+
+
+Success:
+gpon-onu_1/1/2: 71

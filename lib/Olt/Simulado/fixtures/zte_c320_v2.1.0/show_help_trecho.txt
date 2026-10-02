@@ -1,0 +1,9 @@
+# TRECHO de "show ?" (em config): so o que importa ao inventario e ao upgrade.
+  auto-update                    Show auto-update progress
+  file                           Show file information
+  file-server                    Show file-server
+  gpon                           Show GPON information
+  onu-type                       Show ONU type template information
+  remote-unit                    show RU
+  version-running                Show version information running on the card!
+  version-saved                  Show the version information stored in mp file system

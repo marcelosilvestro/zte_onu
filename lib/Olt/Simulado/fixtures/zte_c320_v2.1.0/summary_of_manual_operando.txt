@@ -1,0 +1,19 @@
+Download:
+file f670l_v9.0.11p3n10.bin download successful from remote server
+
+Operating:
+gpon-onu_1/1/8: 8
+
+
+Waiting:
+
+
+
+Fail:
+
+
+
+Success:
+gpon-onu_1/1/2: 71
+gpon-onu_1/1/16: 13
+gpon-onu_1/2/16: 1

@@ -1,0 +1,65 @@
+# Fase 0, rodada 2 (01/10/2026) — arvore de ajuda ligada ao upgrade de ONU. So "?", nada executado.
+OLT-c320_1#file download ?
+  version      NE version file
+  version-ru   Remote unit software file
+  (...outros tipos: capture, cfg-startup, debug-cfg, debug-file, emergency, license, log-*, other, package, patch, perf-mp, v0100, v0101)
+OLT-c320_1#show file ?
+  version-ru   Remote unit software file
+  (...mesmos tipos do file download)
+OLT-c320_1#show file-server ?
+  auto-backup         File server information for automatic backup
+  auto-update         File server information for automatic update
+  boot-server         File server information for boot server
+  manual-backup       File server information for manual backup
+  performance-server  File server information for performance file
+OLT-c320_1#show remote-unit ?
+  aging-time       Remote onu aging-time
+  cfg-file-status  Show RU update status
+  cfg-map          ONU config file map information
+  information      RU information
+  summary-of       Show task or manual summary
+  task             Show task parameter
+  update-status    Show RU update status
+OLT-c320_1#show auto-update ?
+  check-period  Show auto-update check-period configure
+  check-result  Show auto-update check-result
+  configure     Show auto-update configure
+  progress      Show auto-update progress
+OLT-c320_1(config)#remote-unit ?
+  aging-time  Aging time of onu file in flash (Only when ONU file downloaded from remote server)<default=30m>
+  cfg-file    Delete or download config file on ONU
+  cfg-map     Map config file to onu
+  task        Enter ru task mode
+OLT-c320_1(config)#file-server ?
+  auto-backup         Automatic backup data file server
+  auto-update         Auto-update file server
+  boot-server         Download and upload file server
+  manual-backup       Manual backup data file server
+  performance-server  Download and upload performance file server
+OLT-c320_1(config)#auto-update ?
+  activate      Active after update
+  backup        Backup software before update
+  check-period  Check-period
+OLT-c320_1(config)#pon-onu-mng gpon-onu_1/1/1:1 ?
+  <cr>
+OLT-c320_1#pon-onu-mng gpon-onu_1/1/1:1 ?
+%Error 20206: Unrecognized command
+OLT-c320_1#show gpon onu ?
+  baseinfo        Show GPON ONU basic information
+  by              Show GPON ONU search result
+  config-fail     Show GPON ONU config failed information
+  detail-info     Show GPON ONU detail information
+  distance        Show GPON ONU distance information
+  gemport         Show GPON ONU GEM port information
+  next-available  Show GPON ONU next available resource index
+  profile         Show GPON ONU profile information
+  state           Show GPON ONU state information
+  tcont           Show GPON ONU T-CONT information
+  uncfg           Show GPON unconfigured ONU information
+  vport           Show GPON ONU vport information
+OLT-c320_1#show gpon remote-onu ?
+  (78 itens; relevantes ao inventario/upgrade:)
+  equip             Show ONU equipment information
+  file-server       Show ONU file server information
+  model             Show ONU model information
+  sys-attr          Show ONU system attributes information

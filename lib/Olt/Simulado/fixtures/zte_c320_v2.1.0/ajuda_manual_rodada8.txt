@@ -1,0 +1,36 @@
+# Fase 0, rodada 8 (01/10/2026): sintaxe COMPLETA da atualizacao manual por ONU. So "?".
+# (IP e senha do original trocados.)
+OLT-c320_1#remote-unit update WORD gpon-olt_1/1/1 1 remote ftp ipaddress 192.0.2.10 path /firmware user USUARIO password *** ?
+  <cr>
+OLT-c320_1#remote-unit update-and-reboot WORD gpon-olt_1/1/1 1 ?
+  local   RU file is in local flash
+  remote  RU file is on remote sever
+  sdcard  RU file is in sdcard
+  <cr>
+OLT-c320_1#remote-unit update-and-reboot WORD gpon-olt_1/1/1 1 remote ?
+  ftp   File transfer protocol
+  mng   Management interface
+  sftp  Secure file transfer protocol
+  vrf   VPN Routing/Forwarding instance name
+OLT-c320_1#remote-unit update-and-reboot WORD gpon-olt_1/1/1 1 remote ftp ?
+  ipaddress  Ip address
+OLT-c320_1#remote-unit update-reonline WORD type WORD remote ?     (variante por tipo de equipamento — nao usada)
+OLT-c320_1#remote-unit activate gpon-olt_1/1/1 1 ?
+  <cr>
+OLT-c320_1#remote-unit commit gpon-olt_1/1/1 1 ?
+  <cr>
+OLT-c320_1#remote-unit abort  gpon-olt_1/1/1 1 ?
+  <cr>
+OLT-c320_1#show remote-unit summary-of manual ?
+  fail       The position of RU  operate failed
+  operating  The position of RU operating
+  success    The position of RU operate successfully
+  <cr>
+OLT-c320_1#show remote-unit summary-of manual
+(vazio)
+OLT-c320_1#show remote-unit update-status gpon-olt_1/1/1 1
+(vazio)
+OLT-c320_1#show file version-ru device flash
+No such files in master
+
+No such files in slave

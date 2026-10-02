@@ -1,0 +1,22 @@
+OLT-c320_1#show gpon remote-onu equip gpon-onu_1/1/1:1
+Vendor ID:                 ZTEG
+Version:                   V9.0
+SN:                        ZTEGd0000001
+Admin status:              unlock
+Battery monitor:           false
+Security mode:             aes
+Product code:              0
+Total priority queue num:  64
+Total traffic schedule num:8
+Traffic management option: priority-rate-controlled
+Operate status:            enable
+Equipment ID:              F670LV9.0
+OMCC version:              b2
+Security capability:       aes
+Model:                     F670LV9.0
+Survival time:             N/A
+Total GEM port num:        256
+System uptime:             35734.00 s
+Region code:               N/A
+Product SN:                N/A
+Chip info:                 0

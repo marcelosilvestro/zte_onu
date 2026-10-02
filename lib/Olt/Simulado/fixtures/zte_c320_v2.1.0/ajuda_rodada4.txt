@@ -1,0 +1,11 @@
+# Fase 0, rodada 4 (01/10/2026)
+OLT-c320_1#show remote-unit information gpon-olt_1/1/1 ?
+  <1-255>  ONU ID list
+OLT-c320_1#show gpon remote-onu model gpon-onu_1/1/1:1
+Equipment ID:              F670LV9.0
+Model:                     F670LV9.0
+OLT-c320_1#show gpon remote-onu sys-attr gpon-onu_1/1/1:1
+CPU usage:             3%
+Memory usage:          65%
+CPU usage threshold:   100%
+Memory usage threshold:100%

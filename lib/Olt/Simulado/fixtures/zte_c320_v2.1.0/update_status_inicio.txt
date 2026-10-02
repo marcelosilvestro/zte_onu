@@ -1,0 +1,8 @@
+unknown-ru_1/1/2: 71
+Taskname   :
+Action     : Unknown
+ImgLocation: Remote
+Status     : In-progress
+Progress   : 0%
+Failreason : None
+Committime :

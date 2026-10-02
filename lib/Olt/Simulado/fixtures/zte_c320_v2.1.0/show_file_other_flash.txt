@@ -1,0 +1,8 @@
+Directory of other:
+attribute   size       date         time       name
+-rw-        4198       Oct-31-2022  11:45:41   sdlog
+-rw-        56         Feb-24-2022  02:29:06   timelog
+Current directory 2 files total
+Total disk size: 132120576 bytes (26136576 bytes free)
+
+No such files in slave

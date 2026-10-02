@@ -1,0 +1,99 @@
+# Fase 0, rodada 6 (01/10/2026). Tarefa vazia "teste_addon" criada so para listar o modo.
+# ATENCAO: "no remote-unit task <nome>" NAO existe nesta versao; a tarefa ficou criada (vazia).
+OLT-c320_1(config)#remote-unit task teste_addon ?
+  <cr>
+OLT-c320_1(config)#remote-unit task teste_addon
+OLT-c320_1(ru-task)#?
+  action               Configure the RU action of the task
+  description          Configure the description of the task
+  do                   Do privilege mode command(s)
+  end                  Exit to EXEC mode
+  equipment-type       Configure the RU equipment-type of the task
+  exit                 Exit from Remote Unit configuration mode
+  ipaddress            Remote server ipaddress
+  location             the location of the file, local or remote
+  match-vertag         Configure the version tag of the task
+  mode                 Configure the mode of the task
+  parallel-limitation  Configure the parallel-limitation of the task
+  password             Password using to login the remote server
+  path                 File path on remote server
+  range                Configure the range of the task
+  service-type         Configure the service-type of the task
+  show                 Show running system information
+  task                 RU task operation
+  user                 Username using to login the remote server
+  vendor-name          Configure the RU vendor-name of the task
+  version-file         Configure the version-file of the task
+  vrf                  Vrf name
+OLT-c320_1(ru-task)#exit
+OLT-c320_1(config)#no remote-unit task teste_addon
+%Error 20200: Invalid input detected at '^' marker.Invalid command
+OLT-c320_1(config)#no remote-unit ?
+  cfg-map  Map config file to onu
+
+# Rodada 6b (01/10/2026): opcoes de cada comando do modo ru-task. So "?".
+# A tarefa so passa a EXISTIR com "task add": antes disso, "show remote-unit task <nome>"
+# responde "Task does not exist." (e o summary-of responde "Task dose not exist.").
+OLT-c320_1(ru-task)#task ?
+  abort    Abort the RU task
+  add      Add the RU task
+  delete   Delete the RU task
+  restart  Restart the RU task
+OLT-c320_1(ru-task)#action ?
+  reboot             Reboot the cpe
+  update             Update cpe version
+  update-and-reboot  Update cpe version and reboot
+  update-commit      Update and commit the cpe version.
+  update-reonline    Update cpe version. Both activate and commit will be executed when reonline
+OLT-c320_1(ru-task)#mode ?
+  both     Both online and offline
+  offline  The offline cpe will be operated when it is online
+  online   Only online cpe
+OLT-c320_1(ru-task)#service-type ?
+  epon  Epon service type
+  gpon  Gpon service type
+OLT-c320_1(ru-task)#range ?
+  ne    Update version according to whole net element
+  port  Update version according to port
+OLT-c320_1(ru-task)#range port ?
+  gpon-olt_1/1  Gpon-olt interface
+  gpon-olt_1/2  Gpon-olt interface
+OLT-c320_1(ru-task)#location ?
+  local   Version file is in flash
+  remote  Version file is on remote server
+  sdcard  Version file is in sdcard
+OLT-c320_1(ru-task)#match-vertag ?
+  above    Above the task's vertag
+  below    Below the task's vertag
+  equal    Equal to the task's vertag
+  unequal  Unequal to the task's vertag
+OLT-c320_1(ru-task)#equipment-type ?
+  WORD  The RU equipment type (1-64 character(s))
+OLT-c320_1(ru-task)#vendor-name ?
+  WORD  The vendor of RU, such as 'ZTE', 'ZTEG' etc (1-20 character(s))
+OLT-c320_1(ru-task)#version-file ?
+  WORD  The version-file used to update (1-64 character(s))
+OLT-c320_1(ru-task)#path ?
+  WORD  file path on server (3-128 character(s))
+OLT-c320_1(ru-task)#parallel-limitation ?
+  <0-1024>  defaults 64, zero means no limit
+OLT-c320_1#show remote-unit task teste_addon
+Task does not exist.
+OLT-c320_1#show remote-unit summary-of task teste_addon
+Task dose not exist.
+
+# Rodada 6c (01/10/2026): o range NAO aceita ONU — vai ate a PON. Uma tarefa atualiza toda ONU
+# da PON que bater com vendor-name/equipment-type/match-vertag (e mode).
+OLT-c320_1(ru-task)#range port gpon-olt_1/1 ?
+%Error 20202: Invalid input detected at '^' marker.Invalid parameter
+OLT-c320_1(ru-task)#range port gpon-olt_1/1/1 ?
+  <cr>
+OLT-c320_1(ru-task)#match-vertag below ?
+  WORD  The RU version-tag as the base to compare (1-64 character(s))
+OLT-c320_1(ru-task)#match-vertag equal ?
+  WORD  The RU version-tag as the base to compare (1-64 character(s))
+OLT-c320_1(ru-task)#ipaddress ?
+  A.B.C.D  Server ip address
+OLT-c320_1(ru-task)#description ?
+  WORD  The description of the RU task (1-128 character(s))
+# Observacao: "task restart" com Enter devolveu o prompt para "OLT-c320_1#" (saiu do modo).

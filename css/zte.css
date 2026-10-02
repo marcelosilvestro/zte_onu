@@ -1,0 +1,662 @@
+/* =================================================================
+   ONUs ZTE — MK-AUTH Addon
+   As classes lc-* sao copia fiel do Livro Caixa (livro_caixa/css/css.css):
+   mesma paleta, raios, alturas e espacamentos. As zte-* sao so o que o
+   Livro Caixa nao tem (abas, passos, badges de resultado, toasts).
+   ================================================================= */
+
+.panel-body { padding-top: 0 !important; padding-bottom: 0 !important; }
+.panel      { margin-top: 0 !important; margin-bottom: 0 !important; }
+
+.zte-wrap { padding-top: 8px; padding-bottom: 16px; }
+
+/* ---- Abas do addon ---- */
+.zte-abas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid #e2e4e9;
+    border-radius: 8px;
+    padding: 5px 8px;
+    margin-bottom: 12px;
+}
+.zte-marca {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111827;
+    padding: 0 10px 0 4px;
+    margin-right: 4px;
+    border-right: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+.zte-marca i { color: #3266ad; }
+.zte-aba {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-decoration: none;
+    white-space: nowrap;
+}
+a.zte-aba:hover  { background: #f3f4f6; color: #111827; text-decoration: none; }
+.zte-aba.ativa   { background: #111827; color: #fff; }
+a.zte-aba.ativa:hover { background: #000; color: #fff; }
+.zte-aba.em-breve { color: #c4c8cf; cursor: default; padding: 0 7px; }
+
+/* Menu de acoes secundarias ("⋯"): position fixed, filho do body, para nao ser cortado pelo
+   overflow da tabela nem ficar atras do #sistema-rodape. */
+.zte-menu {
+    position: fixed;
+    z-index: 4500;
+    background: #fff;
+    border: 1px solid #e2e4e9;
+    border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+    padding: 4px;
+    min-width: 190px;
+}
+.zte-menu button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+    text-align: left;
+}
+.zte-menu button:hover { background: #f3f4f6; }
+.zte-menu button.perigo { color: #c0392b; }
+.zte-menu button.perigo:hover { background: #fef0f0; }
+.zte-menu hr { border: none; border-top: 1px solid #eef0f4; margin: 4px 0; }
+
+/* Topologia: slot -> PONs em cards compactos */
+.zte-slot { margin-bottom: 12px; }
+.zte-slot-cab { font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+.zte-slot-sem { font-size: 12px; color: #6b7280; padding: 4px 0; }
+.zte-pons { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.zte-pon { border: 1px solid #e2e4e9; border-radius: 8px; padding: 8px 10px; background: #fff; font-size: 12px; }
+.zte-pon-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.zte-pon-cab a { color: #3266ad; font-weight: 700; text-decoration: none; }
+.zte-pon-cab a:hover { text-decoration: underline; }
+.zte-pon-num { display: flex; flex-wrap: wrap; gap: 4px 10px; color: #374151; margin-bottom: 4px; }
+.zte-pon-mods { margin-top: 2px; }
+
+.zte-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 992px) { .zte-duas { grid-template-columns: 1fr; } }
+
+/* Graficos de barras do painel (uma serie, uma cor; rotulo direto; tooltip no hover) */
+.zte-graf { padding: 10px 16px 12px; }
+.zte-graf-linha { display: grid; grid-template-columns: minmax(110px, 34%) 1fr 64px; gap: 8px; align-items: center; padding: 3px 0; font-size: 12px; position: relative; }
+.zte-graf-rot { color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.zte-graf-trilho { height: 14px; position: relative; }
+.zte-graf-barra { height: 100%; min-width: 2px; background: #3266ad; border-radius: 0 4px 4px 0; }
+.zte-graf-linha:hover .zte-graf-barra { background: #2756a0; }
+.zte-graf-val { color: #111827; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.zte-graf-dica {
+    display: none; position: absolute; left: 34%; top: -26px; z-index: 5; background: #111827; color: #fff;
+    font-size: 11px; padding: 3px 8px; border-radius: 5px; white-space: nowrap; pointer-events: none;
+}
+.zte-graf-linha:hover .zte-graf-dica { display: block; }
+
+/* Barra de progresso do upload */
+.zte-progresso { height: 8px; background: #eef0f4; border-radius: 6px; overflow: hidden; }
+.zte-progresso > div { height: 100%; width: 0; background: #3266ad; transition: width .2s; }
+
+/* ---- Avisos de pagina ---- */
+.zte-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fff8e6;
+    border-left: 4px solid #e0a100;
+    color: #6b4e00;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.zte-aviso i { font-size: 18px; line-height: 1.2; }
+.zte-aviso.erro { background: #ffebe9; border-left-color: #d9534f; color: #a5302b; }
+.zte-aviso.info { background: #eef4fc; border-left-color: #3266ad; color: #1f4a85; }
+
+/* ---- Cards de indicador (compactos, horizontais) ---- */
+.zte-cards {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.zte-card {
+    flex: 1 1 150px;
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e2e4e9;
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.zte-card-ico {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: #eef4fc;
+    color: #3266ad;
+}
+.zte-card-ico.verde    { background: #eaf7f0; color: #0f7a50; }
+.zte-card-ico.vermelho { background: #fef0f0; color: #c0392b; }
+.zte-card-ico.cinza    { background: #f0f2f6; color: #6b7280; }
+.zte-card-ico.roxo     { background: #f3ecf8; color: #7b3fa8; }
+.zte-card-txt { min-width: 0; }
+.zte-card-rotulo {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.zte-card-valor { font-size: 14px; font-weight: 800; color: #111827; line-height: 1.25; }
+.zte-card-sub   { font-size: 10px; color: #9ca3af; }
+
+/* ---- Passos da configuracao inicial ---- */
+.zte-passos { list-style: none; margin: 0; padding: 0; }
+.zte-passo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #eef0f4;
+    font-size: 13px;
+}
+.zte-passo:last-child { border-bottom: none; }
+.zte-passo-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+    background: #f0f2f6;
+    color: #6b7280;
+}
+.zte-passo.feito .zte-passo-num    { background: #1d9e75; color: #fff; }
+.zte-passo.pendente .zte-passo-num { background: #3266ad; color: #fff; }
+.zte-passo-txt { flex: 1; min-width: 0; }
+.zte-passo-titulo { font-weight: 700; color: #1a1a1a; }
+.zte-passo-desc   { font-size: 12px; color: #6b7280; }
+.zte-passo.em_breve .zte-passo-titulo { color: #9ca3af; }
+
+/* ---- Badges de resultado ---- */
+.zte-res {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 1px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.zte-res.ok           { background: #eaf7f0; color: #0f7a50; }
+.zte-res.aviso        { background: #fff4dc; color: #8a6100; }
+.zte-res.erro         { background: #fef0f0; color: #c0392b; }
+.zte-res.nao_testavel { background: #f0f2f6; color: #6b7280; }
+.zte-res.feito        { background: #eaf7f0; color: #0f7a50; }
+.zte-res.pendente     { background: #eef4fc; color: #3266ad; }
+.zte-res.em_breve     { background: #f0f2f6; color: #9ca3af; }
+.zte-res.validada, .zte-res.validado               { background: #eaf7f0; color: #0f7a50; }
+.zte-res.somente_leitura, .zte-res.experimental    { background: #fff4dc; color: #8a6100; }
+.zte-res.nao_suportada, .zte-res.bloqueada         { background: #fef0f0; color: #c0392b; }
+.zte-res.desconhecida, .zte-res.indisponivel, .zte-res.inativa { background: #f0f2f6; color: #6b7280; }
+.zte-res.simulada     { background: #f3ecf8; color: #7b3fa8; }
+.zte-res.potencial, .zte-res.sem_cripto { background: #fff4dc; color: #8a6100; }
+.zte-res.validado_ftp { background: #eaf7f0; color: #0f7a50; }
+.zte-res.falhou       { background: #fef0f0; color: #c0392b; }
+.zte-res.disponivel   { background: #eaf7f0; color: #0f7a50; }
+.zte-res.integridade_remota_verificada { background: #eef4fc; color: #3266ad; }
+.zte-res.enviado, .zte-res.hash_origem_calculado, .zte-res.sem_origem { background: #fff4dc; color: #8a6100; }
+.zte-res.invalido, .zte-res.ausente_no_ftp, .zte-res.incompativel { background: #fef0f0; color: #c0392b; }
+.zte-res.desativado   { background: #f0f2f6; color: #6b7280; }
+.zte-res.online       { background: #eaf7f0; color: #0f7a50; }
+.zte-res.offline      { background: #fef0f0; color: #c0392b; }
+.zte-res.desatualizada { background: #fff4dc; color: #8a6100; }
+.zte-res.em_dia       { background: #eaf7f0; color: #0f7a50; }
+.zte-hash { font-family: Consolas, 'Courier New', monospace; font-size: 11px; color: #6b7280; word-break: break-all; }
+.zte-compat-linha { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 6px; margin-bottom: 6px; }
+.zte-compat-linha .lc-input { padding: 6px 9px; font-size: 13px; }
+
+/* Navegador de arquivos do repositorio */
+.zte-trilha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 13px; margin-bottom: 8px; }
+.zte-trilha a { color: #3266ad; cursor: pointer; text-decoration: none; }
+.zte-trilha a:hover { text-decoration: underline; }
+.zte-arq-nome { cursor: default; }
+.zte-arq-nome.dir { color: #3266ad; cursor: pointer; font-weight: 600; }
+.zte-ops { display: flex; flex-wrap: wrap; gap: 4px; }
+.zte-op { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 5px; background: #f0f2f6; color: #9ca3af; text-transform: uppercase; letter-spacing: .4px; }
+.zte-op.ok { background: #eaf7f0; color: #0f7a50; }
+.zte-op.falha { background: #fef0f0; color: #c0392b; }
+.zte-op.pendente { background: #eef4fc; color: #3266ad; }
+
+/* Botoes de acao compactos na linha da tabela */
+.zte-acoes { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: nowrap; }
+.zte-acoes .lc-btn-outline, .zte-acoes .lc-btn-black { height: 28px; padding: 0 9px; font-size: 12px; }
+.zte-form-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.zte-form-2 .lc-input { padding: 7px 10px; font-size: 13px; }
+.zte-form-2 .span2 { grid-column: 1 / -1; }
+@media (max-width: 600px) { .zte-form-2 { grid-template-columns: 1fr; } }
+.zte-etapa { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #eef0f4; font-size: 13px; }
+.zte-etapa:last-child { border-bottom: none; }
+.zte-etapa > div { flex: 1; min-width: 0; }
+.zte-lista { margin: 4px 0 0 18px; padding: 0; font-size: 12px; color: #374151; }
+.zte-lista li { margin-bottom: 3px; }
+
+.zte-papel {
+    display: inline-block;
+    background: #f0f2f6;
+    color: #374151;
+    border-radius: 5px;
+    padding: 1px 7px;
+    margin: 1px 2px 1px 0;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.zte-papel.admin { background: #111827; color: #fff; }
+
+.zte-mono { font-family: Consolas, 'Courier New', monospace; font-size: 12px; }
+.zte-sub  { color: #6b7280; font-size: 12px; }
+.zte-acao { color: #8a6100; font-size: 12px; }
+.zte-quebra { white-space: normal; word-break: break-word; }
+
+/* Formulario de configuracoes em grade compacta */
+.zte-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px 16px;
+    padding: 14px 16px;
+}
+.zte-form-item .lc-input { padding: 6px 10px; font-size: 13px; }
+.zte-chk { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #111827; cursor: pointer; }
+.zte-papeis-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.zte-papeis-grid label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; cursor: pointer; }
+.zte-papeis-grid small { display: block; color: #6b7280; font-size: 11px; }
+
+.zte-paginacao { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 8px 16px; font-size: 12px; color: #6b7280; border-top: 1px solid #eef0f4; }
+.zte-paginacao button { height: 26px; padding: 0 10px; font-size: 12px; }
+.zte-paginacao button:disabled { opacity: .4; cursor: default; }
+
+.zte-mt { margin-top: 12px; }
+.zte-detalhe-json {
+    background: #f7f8fa;
+    border: 1px solid #eef0f4;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 0;
+    max-height: 160px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ---- Toasts: acima dos modais ---- */
+.zte-toasts {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 380px;
+}
+.zte-toast {
+    background: #111827;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    cursor: pointer;
+    animation: lcSlideIn 0.18s ease;
+}
+.zte-toast.ok   { background: #0f7a50; }
+.zte-toast.erro { background: #c0392b; }
+.zte-toast.avis { background: #8a6100; }
+.zte-toast small { display: block; opacity: .8; font-size: 11px; }
+
+/* =================================================================
+   Copia fiel do Livro Caixa (lc-*)
+   ================================================================= */
+
+.lc-loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.78);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+    backdrop-filter: blur(2px);
+}
+.lc-loading-overlay.ativo { display: flex; }
+.lc-loading-box {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+.lc-loading-spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid #e2e4e9;
+    border-top-color: #3266ad;
+    border-radius: 50%;
+    animation: lcSpin 0.7s linear infinite;
+}
+@keyframes lcSpin { to { transform: rotate(360deg); } }
+.lc-loading-text { font-size: 14px; color: #555; font-weight: 600; }
+
+.lc-section-panel {
+    background: #fff;
+    border: 1px solid #e2e4e9;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.lc-section-header {
+    background: #f7f8fa;
+    padding: 11px 16px;
+    border-bottom: 1px solid #e2e4e9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 10px;
+}
+.lc-section-title { font-size: 13px; font-weight: 700; }
+.lc-badge-count {
+    background: #3266ad;
+    color: #fff;
+    border-radius: 20px;
+    padding: 1px 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.lc-table-wrap {
+    overflow-x: auto;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 120px;
+    max-height: 520px;
+}
+.lc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.lc-table thead th {
+    background: #f0f2f6;
+    color: #555;
+    font-weight: 600;
+    padding: 9px 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap;
+    border-bottom: 1px solid #e2e4e9;
+}
+.lc-table tbody tr:hover { background: #f5f8ff; }
+.lc-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eef0f4;
+    vertical-align: middle;
+}
+.lc-empty, .lc-loading {
+    padding: 40px 20px;
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+}
+
+.lc-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1040;
+    align-items: center;
+    justify-content: center;
+}
+.lc-overlay.ativo { display: flex; }
+/* A confirmacao abre POR CIMA de outro modal (ex.: aprovar dentro do detalhe da campanha).
+   Com o mesmo z-index, o modal que vem depois no HTML ganharia e a confirmacao ficaria escondida. */
+#zte-modal-confirma { z-index: 1060; }
+.lc-modal-box {
+    background: #fff;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 460px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    overflow: hidden;
+    animation: lcSlideIn 0.18s ease;
+}
+.lc-modal-box.sm { max-width: 320px; }
+.lc-modal-box.lg { max-width: 640px; }
+@keyframes lcSlideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+}
+.lc-modal-header {
+    background: #3266ad;
+    color: #fff;
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.lc-modal-header-dark   { background: #2c3e50 !important; }
+.lc-modal-header-danger { background: #c0392b !important; }
+.lc-confirm-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 26px;
+}
+.lc-confirm-icon.fechar  { background: #eaf0f8; color: #2c3e50; }
+.lc-confirm-icon.excluir { background: #fdf0ef; color: #c0392b; }
+.lc-confirm-msg {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+.lc-confirm-sub { font-size: 12px; color: #aaa; margin: 0; line-height: 1.6; }
+.lc-modal-title { font-size: 14px; font-weight: 700; }
+.lc-modal-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 0 2px;
+    line-height: 1;
+}
+.lc-modal-close:hover { opacity: 1; }
+.lc-modal-body   { padding: 18px 20px; max-height: 70vh; overflow-y: auto; }
+.lc-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eef0f4;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.lc-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 5px;
+}
+.lc-input {
+    width: 100%;
+    border: 1.5px solid #e2e4e9;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+    background: #fff;
+}
+.lc-input:focus { border-color: #3266ad; }
+.lc-input-hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+.lc-btn-cancel {
+    background: #f7f8fa;
+    border: 1px solid #e2e4e9;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555;
+}
+.lc-btn-cancel:hover { background: #eef0f4; }
+.lc-btn-confirm {
+    background: #3266ad;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.lc-btn-confirm:hover { background: #2756a0; }
+.lc-btn-confirm.danger { background: #e74c3c; }
+.lc-btn-confirm.danger:hover { background: #c0392b; }
+.lc-btn-confirm:disabled { opacity: .5; cursor: default; }
+
+.lc-btn-outline {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.lc-btn-outline:hover { background: #f3f4f6; }
+.lc-btn-black {
+    background: #111827;
+    color: #fff;
+    border: none;
+    padding: 0 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+}
+.lc-btn-black:hover { background: #000; }
+.lc-btn-black:disabled { opacity: .5; cursor: default; }
+
+.lc-filter-bar {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.lc-filter-group { display: flex; flex-direction: column; }
+.lc-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.lc-input-date {
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #374151;
+    outline: none;
+    height: 32px;
+    box-sizing: border-box;
+}
+.lc-input-date.w200 { width: 200px; }
+
+/* ---- Responsividade (mesmo esquema de prioridade do Livro Caixa) ---- */
+@media (max-width: 992px) { .prio-8 { display: none; } }
+@media (max-width: 850px) { .prio-7 { display: none; } }
+@media (max-width: 700px) { .prio-6 { display: none; } }
+@media (max-width: 768px) {
+    .zte-marca { display: none; }
+    .zte-card  { flex: 1 1 calc(50% - 5px); }
+    .lc-input-date.w200 { width: 100%; }
+}

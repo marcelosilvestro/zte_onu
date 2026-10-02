@@ -1,0 +1,14 @@
+OLT-c320_1#show remote-unit information gpon-olt_1/1/1 1
+gpon-onu_1/1/1: 1
+RuVendorName : ZTEG
+RuType       : F670LV9.0
+Region 1
+Vertag        : V9.0.11P1N52
+Commited      : Yes
+Activated     : Yes
+Valid         : Yes
+Region 2
+Vertag        : V9.0.11P1N48
+Commited      : No
+Activated     : No
+Valid         : Yes

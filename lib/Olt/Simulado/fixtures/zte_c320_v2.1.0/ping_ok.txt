@@ -1,0 +1,4 @@
+OLT-c320_1#ping 192.0.2.10
+sending 5,100-byte ICMP echoes to 192.0.2.10,timeout is 2 seconds.
+!!!!!
+Success rate is 100 percent(5/5),round-trip min/avg/max= 1/1/1 ms.

@@ -1,0 +1,7 @@
+pacote/
+*.bak
+*.old
+# Copiado do include do proprio servidor pelo instalador (arquivo do MK-AUTH, nao nosso).
+addons.class.php
+# Copia antiga dos fixtures (os validos ficam em lib/Olt/Simulado/fixtures/).
+tests/fixtures/

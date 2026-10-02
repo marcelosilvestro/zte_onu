@@ -1,0 +1,7 @@
+OLT-c320_1#file ?
+  copy      Copy srcfile to dst
+  delete    Delete file
+  download  Download file from host
+  sync      Sync file to backup board
+  upload    Upload file to host
+OLT-c320_1#file

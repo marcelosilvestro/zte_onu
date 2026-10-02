@@ -1,0 +1,11 @@
+# Fase 0, rodada 7 (01/10/2026). Atualizacao MANUAL por ONU (modo EXEC, prompt "#").
+# E o caminho escolhido: controle ONU a ONU (o "range" do remote-unit task so vai ate a PON).
+OLT-c320_1#remote-unit ?
+  abort              Abort last operation
+  activate           Activate RU version
+  commit             Commit RU version
+  update             Update RU version
+  update-and-reboot  Update ru version and reboot
+  update-commit      Update and commit the ru version.
+  update-reonline    Update ru version. Both activate and commit will be executed when reonline
+# pon-onu-mng gpon-onu_1/1/1:1 -> "?" sem nada de atualizacao (so reboot, restore, file-server...).

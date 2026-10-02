@@ -1,0 +1,7 @@
+# TRECHO de "configure terminal" + "?" (a lista inteira tem ~190 itens): so o que importa ao upgrade.
+  auto-update                  Auto-update
+  file-server                  File-server
+  gpon                         Enter GPON mode
+  onu-pnp                      Enter onu-pnp mode
+  pon-onu-mng                  Enter pon-onu-mng configuration mode
+  remote-unit                  Ru task configuration

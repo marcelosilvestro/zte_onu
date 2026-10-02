@@ -1,0 +1,9 @@
+Directory of other:
+attribute   size       date         time       name
+-rw-        25856080   Oct-01-2026  22:45:19   f670l_v9.0.11p3n10.bin
+-rw-        4198       Oct-31-2022  11:45:41   sdlog
+-rw-        56         Feb-24-2022  02:29:06   timelog
+Current directory 3 files total
+Total disk size: 132120576 bytes (692224 bytes free)
+
+No such files in slave
