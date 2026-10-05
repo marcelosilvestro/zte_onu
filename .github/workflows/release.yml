@@ -1,6 +1,6 @@
 # Publica o pacote do addon quando uma tag v* e empurrada.
 #
-#   git tag -a v0.10.1 -m "..." && git push origin v0.9.1
+#   git tag -a v0.10.2 -m "..." && git push origin v0.10.2
 #
 # O empacotar.sh e quem decide o que entra; aqui so rodamos ele e anexamos o resultado.
 name: release

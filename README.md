@@ -4,7 +4,9 @@ Addon do MK-AUTH para inventário, gerenciamento e atualização de firmware de 
 OLTs ZTE C320. Ele é um produto distribuível: nenhum IP, usuário, senha ou servidor FTP fica
 no código, e tudo é cadastrado pela interface.
 
-> **Estado: v0.10.1 (02/10/2026).** Todas as telas funcionam: OLTs, repositórios FTP, firmwares,
+> **Estado: v0.10.2 (05/10/2026).** Novidades: Topologia redesenhada (resumo, filtros, estado
+> de cada PON e detalhe por PON) e leitura de modelo, HW e versão das ONUs de outros fabricantes
+> (ex.: Furukawa), só para consulta. Todas as telas funcionam: OLTs, repositórios FTP, firmwares,
 > inventário, topologia, regras, campanhas, fila, atualização avulsa pelo inventário,
 > diagnóstico, auditoria e configurações. O driver da C320 (MVR V2.1.x) está **validado**:
 > 5 ONUs atualizadas na OLT de referência (F670L e F6201B, avulsas e um piloto de 2 ONUs).
@@ -81,10 +83,10 @@ wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instal
 wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash -s -- --diagnostico
 
 # instalar uma versão específica
-wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash -s -- --versao=v0.10.1
+wget -O - https://raw.githubusercontent.com/marcelosilvestro/zte_onu/main/instalar.sh | bash -s -- --versao=v0.10.2
 
 # servidor sem acesso ao GitHub: baixe o pacote da página de Releases e instale localmente
-bash instalar.sh --pacote=zte_onu-0.10.1.tar.gz
+bash instalar.sh --pacote=zte_onu-0.10.2.tar.gz
 ```
 
 Outras opções: `--forcar` (reinstala mesmo atualizado), `--nao-interativo` (nunca pergunta;
