@@ -9,8 +9,9 @@
  *   3. finalizar   snapshot para o painel
  *
  * Detalhe por ONU (o comando caro) so e lido quando: a posicao e nova, o SN mudou, faltam dados,
- * ou o modo e "completo". equip (modelo/HW) so para ONU ZTE online: outros fabricantes (ex.:
- * Furukawa bridge) nao sao atualizados por este addon.
+ * ou o modo e "completo". equip (modelo/HW) e versao de software sao lidos de QUALQUER fabricante
+ * online: a Furukawa bridge (chipset ZTE) responde aos dois pelo OMCI (validado 05/10). Ler nao e
+ * atualizar: so FORNECEDOR_ATUALIZAVEL entra em regra, campanha e avulsa.
  *
  * Posicao que sumiu da OLT nao e apagada (historico de campanha aponta para ela): ganha
  * ausente_desde e estado "desconhecido".
@@ -96,15 +97,15 @@ final class InventarioServico
             $onus = [];
             $detalhes = 0;
 
-            // Versao de software: so ZTE online; relida quando falta, quando a ONU mudou, a cada
-            // HORAS_SW ou na leitura completa (uma ONU pode ter sido atualizada por fora).
+            // Versao de software: qualquer fabricante online; relida quando falta, quando a ONU mudou,
+            // a cada HORAS_SW ou na leitura completa (uma ONU pode ter sido atualizada por fora).
             $precisaSw = [];
             foreach ($estado['onus'] as $o) {
                 $n = $o['onu'];
                 $b = $base[$n] ?? null;
                 $velha = $existentes[$n] ?? null;
                 $sn = $b['sn'] ?? '';
-                if (($b['fornecedor'] ?? '') === self::FORNECEDOR_ATUALIZAVEL && $o['online']
+                if (($b['fornecedor'] ?? '') !== '' && $o['online']
                     && ($completo || $velha === null || ($sn !== '' && $velha['sn'] !== $sn) || $velha['sw_versao'] === null
                         || $velha['sw_lido_em'] === null || strtotime($velha['sw_lido_em']) < time() - self::HORAS_SW * 3600)) {
                     $precisaSw[$n] = true;
@@ -155,7 +156,7 @@ final class InventarioServico
                             throw $f;
                         }
                     }
-                    if ($fornecedor === self::FORNECEDOR_ATUALIZAVEL && $o['online']
+                    if ($fornecedor !== '' && $o['online']
                         // hw_versao vazio tambem: o modelo pode ter vindo do RuType (que nao traz o
                         // HW) num inventario em que a ONU estava offline — sem isso ela nunca entra
                         // em regra nenhuma (02/10: 5 ONUs da olt1 assim).
@@ -280,7 +281,8 @@ final class InventarioServico
             $d = $drv->detalheOnu((int) $o['slot'], (int) $o['porta'], (int) $o['onu_num']);
             $q = null;
             $sw = null;
-            if (($o['fornecedor'] ?? '') === self::FORNECEDOR_ATUALIZAVEL || str_starts_with($d['sn'], self::FORNECEDOR_ATUALIZAVEL)) {
+            // Qualquer fabricante: falha de comando/formato so deixa o campo sem leitura.
+            if (($o['fornecedor'] ?? '') !== '' || $d['sn'] !== '') {
                 foreach (['q' => 'equipOnu', 'sw' => 'versaoSw'] as $var => $metodo) {
                     try {
                         $$var = $drv->$metodo((int) $o['slot'], (int) $o['porta'], (int) $o['onu_num']);
@@ -362,14 +364,20 @@ final class InventarioServico
         ];
     }
 
-    /** Arvore OLT -> slot -> PON com contagens e distribuicao de modelos. */
+    /**
+     * Arvore OLT -> slot -> PON com contagens, distribuicao de modelos (com as versoes de cada um),
+     * fabricantes e a situacao do firmware (em dia / desatualizada / sem referencia, pela mesma
+     * regra de desatualizada()).
+     */
     public static function topologia(): array
     {
         $olts = [];
-        foreach (Db::todos('SELECT id, nome, protocolo, versao_detectada, placas_detectadas, pons_detectadas, inventario_em, ativo FROM tab_zte_olt ORDER BY nome') as $t) {
+        foreach (Db::todos('SELECT id, nome, protocolo, versao_detectada, placas_detectadas, pons_detectadas, inventario_em, ativo,
+                                   ultimo_teste_em, ultimo_teste_resultado FROM tab_zte_olt ORDER BY nome') as $t) {
             $olts[(int) $t['id']] = [
                 'id' => (int) $t['id'], 'nome' => $t['nome'], 'simulada' => $t['protocolo'] === 'simulado', 'ativo' => (int) $t['ativo'],
                 'versao' => $t['versao_detectada'], 'inventario_em' => $t['inventario_em'],
+                'teste_em' => $t['ultimo_teste_em'], 'teste_resultado' => $t['ultimo_teste_resultado'],
                 'placas' => $t['placas_detectadas'] ? (json_decode($t['placas_detectadas'], true) ?: []) : [],
                 'pons_detectadas' => $t['pons_detectadas'] ? (json_decode($t['pons_detectadas'], true) ?: []) : [],
                 'pons' => [],
@@ -380,19 +388,46 @@ final class InventarioServico
                                     SUM(fornecedor = ? AND estado = 'online' AND modelo IS NULL) AS sem_modelo
                                FROM tab_zte_onu GROUP BY olt_id, slot, porta ORDER BY olt_id, slot, porta",
             [self::FORNECEDOR_ATUALIZAVEL, self::FORNECEDOR_ATUALIZAVEL]);
-        $modelos = [];
-        foreach (Db::todos("SELECT olt_id, slot, porta, COALESCE(modelo, '?') AS modelo, COALESCE(hw_versao, '') AS hw, COUNT(*) AS n
-                              FROM tab_zte_onu WHERE ausente_desde IS NULL AND fornecedor = ? GROUP BY 1, 2, 3, 4, 5", [self::FORNECEDOR_ATUALIZAVEL]) as $m) {
-            $modelos[$m['olt_id'] . '/' . $m['slot'] . '/' . $m['porta']][] = ['modelo' => $m['modelo'], 'hw' => $m['hw'], 'n' => (int) $m['n']];
+        $alvos = self::alvos();
+        $modelos = $firmware = $outros = [];
+        foreach (Db::todos("SELECT olt_id, slot, porta, fornecedor, modelo, hw_versao, sw_versao, COUNT(*) AS n
+                              FROM tab_zte_onu WHERE ausente_desde IS NULL GROUP BY 1, 2, 3, 4, 5, 6, 7") as $m) {
+            $k = $m['olt_id'] . '/' . $m['slot'] . '/' . $m['porta'];
+            $n = (int) $m['n'];
+            if ($m['fornecedor'] !== self::FORNECEDOR_ATUALIZAVEL) {
+                // Outro fabricante: modelo e versao so para consulta (nunca entra em firmware/regra).
+                $km = ($m['fornecedor'] ?? '?') . '|' . ($m['modelo'] ?? '?') . '|' . ($m['hw_versao'] ?? '');
+                $outros[$k][$km] = $outros[$k][$km] ?? ['fornecedor' => $m['fornecedor'] ?? '?', 'modelo' => $m['modelo'] ?? '?',
+                                                        'hw' => $m['hw_versao'] ?? '', 'n' => 0, 'versoes' => []];
+                $outros[$k][$km]['n'] += $n;
+                $outros[$k][$km]['versoes'][] = ['sw' => $m['sw_versao'], 'n' => $n, 'desatualizada' => null];
+                continue;
+            }
+            $des = self::desatualizada($m, $alvos);
+            $firmware[$k] = $firmware[$k] ?? ['em_dia' => 0, 'desatualizadas' => 0, 'sem_referencia' => 0];
+            $firmware[$k][$des === null ? 'sem_referencia' : ($des ? 'desatualizadas' : 'em_dia')] += $n;
+            $km = ($m['modelo'] ?? '?') . '|' . ($m['hw_versao'] ?? '');
+            $modelos[$k][$km] = $modelos[$k][$km] ?? ['modelo' => $m['modelo'] ?? '?', 'hw' => $m['hw_versao'] ?? '', 'n' => 0, 'versoes' => []];
+            $modelos[$k][$km]['n'] += $n;
+            $modelos[$k][$km]['versoes'][] = ['sw' => $m['sw_versao'], 'n' => $n, 'desatualizada' => $des];
+        }
+        $fabricantes = [];
+        foreach (Db::todos("SELECT olt_id, slot, porta, COALESCE(fornecedor, '?') AS fornecedor, COUNT(*) AS n
+                              FROM tab_zte_onu WHERE ausente_desde IS NULL GROUP BY 1, 2, 3, 4 ORDER BY n DESC") as $f) {
+            $fabricantes[$f['olt_id'] . '/' . $f['slot'] . '/' . $f['porta']][] = ['fornecedor' => $f['fornecedor'], 'n' => (int) $f['n']];
         }
         foreach ($linhas as $l) {
             if (!isset($olts[(int) $l['olt_id']])) {
                 continue;
             }
+            $k = $l['olt_id'] . '/' . $l['slot'] . '/' . $l['porta'];
             $olts[(int) $l['olt_id']]['pons'][] = [
                 'slot' => (int) $l['slot'], 'pon' => (int) $l['porta'], 'total' => (int) $l['total'], 'online' => (int) $l['online'],
                 'offline' => (int) $l['offline'], 'ausentes' => (int) $l['ausentes'], 'zte' => (int) $l['zte'],
-                'sem_modelo' => (int) $l['sem_modelo'], 'modelos' => $modelos[$l['olt_id'] . '/' . $l['slot'] . '/' . $l['porta']] ?? [],
+                'sem_modelo' => (int) $l['sem_modelo'], 'modelos' => array_values($modelos[$k] ?? []),
+                'modelos_outros' => array_values($outros[$k] ?? []),
+                'firmware' => $firmware[$k] ?? ['em_dia' => 0, 'desatualizadas' => 0, 'sem_referencia' => 0],
+                'fabricantes' => $fabricantes[$k] ?? [],
             ];
         }
         return array_values($olts);

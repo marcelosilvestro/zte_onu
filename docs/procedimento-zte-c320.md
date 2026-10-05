@@ -80,7 +80,9 @@ envia à ONU por OMCI.
 - PON vazia ou desativada responde `%Code 62310-GPONSRV : No related information to show.` —
   é PON vazia, não erro.
 - Uma porta recusada no meio da placa é pulada; recusa já na porta 1 = a placa não é de PON.
-- ONUs Furukawa (SN `FRKW`) entram só com SN e nome e nunca são atualizadas.
+- ONUs Furukawa (SN `FRKW`, bridge com chipset ZTE) respondem ao `show gpon remote-onu equip` e ao
+  `show remote-unit information` (05/10/2026: 630-10B, HW `ZFK1.2A`, `V4.0.2`). O inventário lê
+  modelo, HW e versão delas só para consulta: nunca são atualizadas.
 
 ## Segurança operacional
 

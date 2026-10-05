@@ -21,9 +21,12 @@ final class AjaxFirmware
             'politica'     => Config::get('integridade_politica'),
             'pode_editar'  => Permissao::tem('firmware.gerenciar'),
             'pode_excluir_ftp' => Permissao::tem('repositorio.excluir'),
-            // Modelos e HW ja vistos no inventario: sugestao para a compatibilidade.
+            // Modelos e HW ja vistos no inventario: sugestao para a compatibilidade. So ZTE: o
+            // inventario tambem le o modelo de outros fabricantes, que nao recebem firmware.
             'modelos_inventario' => Db::todos("SELECT modelo, hw_versao, COUNT(*) AS onus FROM tab_zte_onu
-                                                WHERE modelo IS NOT NULL AND modelo <> '' GROUP BY modelo, hw_versao ORDER BY modelo, hw_versao LIMIT 200"),
+                                                WHERE modelo IS NOT NULL AND modelo <> '' AND fornecedor = ?
+                                             GROUP BY modelo, hw_versao ORDER BY modelo, hw_versao LIMIT 200",
+                                             [InventarioServico::FORNECEDOR_ATUALIZAVEL]),
         ];
     }
 

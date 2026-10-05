@@ -36,7 +36,9 @@ final class Fixtures
             return self::personalizar(self::corpo($dir, 'show_gpon_onu_detail_info.txt'), (int) $m[1]);
         }
         if (preg_match('#^show gpon remote-onu equip gpon-onu_1/1/1:(\d+)$#', $linha, $m) && self::existe((int) $m[1], $dir)) {
-            return self::personalizar(self::corpo($dir, 'show_gpon_remote_onu_equip.txt'), (int) $m[1]);
+            // Furukawa (bridge, chipset ZTE) responde ao OMCI com o proprio equip (saida real, 05/10).
+            return self::personalizar(self::corpo($dir, self::furukawa((int) $m[1])
+                ? 'show_gpon_remote_onu_equip_furukawa.txt' : 'show_gpon_remote_onu_equip.txt'), (int) $m[1]);
         }
         if (preg_match('#^show remote-unit information gpon-olt_1/1/1 (\d+)-(\d+)$#', $linha, $m)) {
             $blocos = [];
@@ -50,10 +52,9 @@ final class Fixtures
         }
         if (preg_match('#^show remote-unit information gpon-olt_1/1/1 (\d+)$#', $linha, $m) && self::existe((int) $m[1], $dir)) {
             $n = (int) $m[1];
-            // Furukawa responde com o proprio bloco (RuType 630-10B), como na saida real em lista.
-            if (preg_match('#gpon-onu_1/1/1:' . $n . '\s+\S+\s+\S+\s+SN:FRKW#', self::corpo($dir, 'show_gpon_onu_baseinfo.txt'))) {
-                return "gpon-onu_1/1/1: $n\nRuVendorName : FRKW\nRuType       : 630-10B\nRegion 1\nVertag        : V4.0.2\nCommited      : Yes\n"
-                     . "Activated     : Yes\nValid         : Yes\nRegion 2\nVertag        : V4.0.2\nCommited      : No\nActivated     : No\nValid         : Yes";
+            // Furukawa responde com o proprio bloco (RuType 630-10B), saida real de 05/10.
+            if (self::furukawa($n, $dir)) {
+                return str_replace('gpon-onu_1/1/1: 2', 'gpon-onu_1/1/1: ' . $n, self::corpo($dir, 'show_remote_unit_information_furukawa.txt'));
             }
             $t = self::corpo($dir, 'show_remote_unit_information.txt');
             $t = str_replace('gpon-onu_1/1/1: 1', 'gpon-onu_1/1/1: ' . $n, $t);
@@ -97,11 +98,18 @@ final class Fixtures
         return (bool) preg_match('#^1/1/1:' . $onu . '\s#m', self::corpo($dir, 'show_gpon_onu_state.txt'));
     }
 
+    /** Posicao Furukawa no baseinfo do fixture (SN FRKW, perfil HBR). */
+    private static function furukawa(int $onu, string $dir = self::DIR_PADRAO): bool
+    {
+        return (bool) preg_match('#gpon-onu_1/1/1:' . $onu . '\s+\S+\s+\S+\s+SN:FRKW#', self::corpo($dir, 'show_gpon_onu_baseinfo.txt'));
+    }
+
     private static function personalizar(string $t, int $onu): string
     {
         // O SN segue o baseinfo: nas posicoes Furukawa (HBR) ele e FRKW.
-        $furukawa = (bool) preg_match('#gpon-onu_1/1/1:' . $onu . '\s+\S+\s+\S+\s+SN:FRKW#', self::corpo(self::DIR_PADRAO, 'show_gpon_onu_baseinfo.txt'));
+        $furukawa = self::furukawa($onu);
         $sn = $furukawa ? sprintf('FRKW%08d', $onu) : sprintf('ZTEGD%07d', $onu);
+        $t = str_replace('FRKW00000002', $sn, $t);    // fixture do equip da Furukawa
         $t = str_replace('gpon-onu_1/1/1:1', 'gpon-onu_1/1/1:' . $onu, $t);
         $t = str_replace('cliente_teste_01', sprintf('cliente_teste_%02d', $onu), $t);
         $t = str_replace('ZTEGD0000001', $sn, $t);

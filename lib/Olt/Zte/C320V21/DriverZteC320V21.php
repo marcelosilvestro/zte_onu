@@ -43,7 +43,7 @@ class DriverZteC320V21 extends DriverOlt
                 'Falha de download aparece em "show remote-unit summary-of manual" (com o motivo); a lista não tem data, então só conta o que surgiu depois do comando.',
                 'Acesso somente por telnet. Login conferido na OLT de referência (01/10/2026); a paginação "--More--" ainda não foi exercitada numa saída longa real.',
                 'PON sem ONUs (vazia ou desativada) responde "%Code 62310-GPONSRV : No related information to show.": entra no inventário com 0 ONUs. Uma porta recusada no meio da placa é pulada, sem parar a descoberta.',
-                'ONUs de outros fabricantes (ex.: Furukawa, SN FRKW) entram no inventário só com SN e nome: o modelo não é lido e elas nunca são atualizadas.',
+                'ONUs de outros fabricantes (ex.: Furukawa 630-10B, SN FRKW) têm modelo, HW e versão lidos pelo OMCI, como as ZTE (validado em 05/10/2026), mas só para consulta: nunca são atualizadas.',
             ],
             'prerequisitos' => [
                 'Usuário da OLT com acesso ao modo privilegiado (#), direto ou por senha de enable.',

@@ -81,17 +81,107 @@ a.zte-aba.ativa:hover { background: #000; color: #fff; }
 .zte-menu button.perigo:hover { background: #fef0f0; }
 .zte-menu hr { border: none; border-top: 1px solid #eef0f4; margin: 4px 0; }
 
-/* Topologia: slot -> PONs em cards compactos */
-.zte-slot { margin-bottom: 12px; }
-.zte-slot-cab { font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 6px; }
-.zte-slot-sem { font-size: 12px; color: #6b7280; padding: 4px 0; }
-.zte-pons { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
-.zte-pon { border: 1px solid #e2e4e9; border-radius: 8px; padding: 8px 10px; background: #fff; font-size: 12px; }
-.zte-pon-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.zte-pon-cab a { color: #3266ad; font-weight: 700; text-decoration: none; }
-.zte-pon-cab a:hover { text-decoration: underline; }
-.zte-pon-num { display: flex; flex-wrap: wrap; gap: 4px 10px; color: #374151; margin-bottom: 4px; }
-.zte-pon-mods { margin-top: 2px; }
+/* ---- Topologia: OLT -> resumo -> slot -> cards de PON ----
+   Cor so para estado: verde normal, ambar atencao, vermelho critico. A cor nunca vem sozinha:
+   todo estado tem icone e texto (title). */
+.zte-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.zte-chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px;
+    background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 12px; font-weight: 600; color: #374151; cursor: pointer; transition: background .15s, border-color .15s;
+}
+.zte-chip:hover { background: #f3f4f6; }
+.zte-chip.ativo { background: #111827; border-color: #111827; color: #fff; }
+.zte-chip-n { background: #f0f2f6; color: #374151; border-radius: 20px; padding: 0 7px; font-size: 11px; font-weight: 700; }
+.zte-chip.ativo .zte-chip-n { background: rgba(255,255,255,.18); color: #fff; }
+.zte-chip .bi-exclamation-triangle-fill { color: #e0a100; }
+.zte-chip .bi-x-circle-fill { color: #e74c3c; }
+.zte-chip .bi-cpu { color: #8a6100; }
+.zte-chip.ativo .bi { color: #fff; }
+.zte-busca { position: relative; }
+.zte-busca i { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px; }
+.zte-busca .lc-input-date { padding-left: 28px; }
+.zte-dir { margin-left: auto; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.zte-chip:focus-visible, .zte-pc:focus-visible, .zte-topo-slot-cab:focus-visible { outline: 2px solid #3266ad; outline-offset: 2px; }
+
+.zte-topo-olt { margin-bottom: 12px; height: auto; }
+.zte-topo-corpo { padding: 12px 14px 4px; }
+.zte-topo-resumo { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.zte-topo-resumo .zte-card { flex: 1 1 160px; margin: 0; }
+.zte-topo-resumo .zte-card-txt { flex: 1; }
+.zte-topo-donut { flex: 0 1 230px; display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e2e4e9; border-radius: 8px; padding: 6px 12px; }
+.zte-topo-donut svg { flex-shrink: 0; }
+.zte-leg { font-size: 12px; color: #374151; line-height: 1.6; }
+.zte-leg b { color: #111827; font-variant-numeric: tabular-nums; }
+.zte-leg .zte-sub { font-size: 11px; }
+.zte-pt { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+.zte-pt.on  { background: #1d9e75; }
+.zte-pt.off { background: #e74c3c; }
+.zte-pt.des { background: #e0a100; }
+.zte-pt.sem { background: #c4c8cf; }
+
+/* barra simples e barra empilhada (firmware) */
+.zte-mini, .zte-pilha { display: flex; height: 5px; background: #eef0f4; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.zte-mini > span, .zte-pilha > span { display: block; height: 100%; transition: width .25s ease; }
+.zte-mini .on, .zte-pilha .on   { background: #1d9e75; }
+.zte-mini .off                  { background: #e74c3c; }
+.zte-mini .azul                 { background: #3266ad; }
+.zte-pilha .des                 { background: #e0a100; }
+.zte-pilha .sem                 { background: #c4c8cf; }
+
+.zte-topo-slot { margin-bottom: 12px; }
+.zte-topo-slot-cab {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: #f7f8fa; border: 1px solid #e2e4e9; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px;
+    font-size: 13px; font-weight: 700; color: #111827; cursor: pointer; user-select: none;
+}
+.zte-topo-slot-cab:hover { background: #f0f2f6; }
+.zte-topo-slot-cab .zte-dir { font-weight: 500; font-size: 12px; color: #6b7280; gap: 10px; }
+.zte-topo-slot-cab .bi-chevron-up { transition: transform .2s; color: #6b7280; }
+.zte-topo-slot.fechado .zte-topo-slot-cab .bi-chevron-up { transform: rotate(180deg); }
+.zte-topo-slot.fechado .zte-topo-pons { display: none; }
+/* com filtro ou busca ativos o slot recolhido abre, senao o resultado ficaria escondido */
+.filtrando .zte-topo-slot.fechado .zte-topo-pons { display: grid; }
+a.lc-btn-outline, a.lc-btn-outline:hover { color: #374151; text-decoration: none; }
+a.lc-btn-black, a.lc-btn-black:hover { color: #fff; text-decoration: none; }
+.zte-topo-slot-sem { font-size: 12px; color: #6b7280; padding: 2px 2px 10px; }
+.zte-topo-pons { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; animation: zteFade .2s ease; }
+@keyframes zteFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* card da PON */
+.zte-pc {
+    position: relative; background: #fff; border: 1px solid #e2e4e9; border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; color: #374151; cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.zte-pc:hover { border-color: #9fb8dc; box-shadow: 0 3px 10px rgba(17,24,39,.07); transform: translateY(-1px); }
+.zte-pc.atencao { border-color: #f0dca8; }
+.zte-pc.critico { border-color: #f3c4c0; box-shadow: inset 3px 0 0 #e74c3c; }
+.zte-pc.atencao:hover, .zte-pc.critico:hover { border-color: #9fb8dc; }
+.zte-pc-topo { display: flex; align-items: flex-start; gap: 6px; }
+.zte-pc-id { flex: 1; min-width: 0; }
+.zte-pc-nome { font-size: 13px; font-weight: 700; color: #111827; white-space: nowrap; }
+.zte-pc-nome .bi { font-size: 11px; margin-right: 3px; }
+.zte-pc .zte-sub { font-size: 11px; }
+.zte-pc-seta { position: absolute; top: 6px; right: 6px; color: #c4c8cf; font-size: 11px; }
+.zte-pc:hover .zte-pc-seta { color: #3266ad; }
+.zte-pc-num { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 4px 0 6px; font-size: 11px; }
+.zte-pc-num b { color: #111827; font-variant-numeric: tabular-nums; }
+.zte-pc-fw { display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; }
+.zte-pc-fw b { color: #374151; font-variant-numeric: tabular-nums; }
+.zte-ok   { color: #0f7a50; }
+.zte-aten { color: #b07d00; }
+.zte-crit { color: #c0392b; }
+.zte-anel { flex-shrink: 0; margin-right: 8px; }
+.zte-anel text { font-size: 10px; font-weight: 800; fill: #111827; }
+
+/* modal da PON */
+.zte-pd-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 600px) { .zte-pd-grade { grid-template-columns: 1fr; } }
+.zte-pd-tit { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.zte-pd-modelo { border: 1px solid #eef0f4; border-radius: 6px; padding: 6px 9px; margin-bottom: 6px; }
+.zte-pd-modelo-cab { display: flex; justify-content: space-between; font-weight: 700; color: #111827; font-size: 12px; }
+.zte-pd-ver { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 12px; padding: 2px 0; }
 
 .zte-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 @media (max-width: 992px) { .zte-duas { grid-template-columns: 1fr; } }
@@ -659,4 +749,7 @@ a.zte-aba.ativa:hover { background: #000; color: #fff; }
     .zte-marca { display: none; }
     .zte-card  { flex: 1 1 calc(50% - 5px); }
     .lc-input-date.w200 { width: 100%; }
+    .zte-topo-donut { flex: 1 1 100%; }
+    .zte-dir { margin-left: 0; }
+    .zte-busca { flex: 1 1 100%; }
 }

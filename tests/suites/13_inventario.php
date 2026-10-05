@@ -78,7 +78,7 @@ T::suite('Inventario :: leitura de uma PON');
 
 $r = InventarioServico::lerPon($oid, 1, 1, false, 'teste');
 T::igual('27 ONUs, 25 online, 27 novas', [27, 25, 27], [$r['total'], $r['online'], $r['novas']]);
-T::igual('detalhes: 27 detail-info + 21 equip + 1 versao em faixa (um comando para a PON)', 49, $r['detalhes_lidos']);
+T::igual('detalhes: 27 detail-info + 25 equip (21 ZTE + 4 Furukawa online) + 1 versao em faixa (um comando para a PON)', 53, $r['detalhes_lidos']);
 $o7 = Db::um('SELECT * FROM tab_zte_onu WHERE olt_id = ? AND slot = 1 AND porta = 1 AND onu_num = 7', [$oid]);
 T::igual('ONU 7: nome = login, modelo e HW lidos', ['cliente_teste_07', 'cliente_teste_07', 'F670LV9.0', 'V9.0', 'ZTEG', 'online'],
     [$o7['nome'], $o7['login_cliente'], $o7['modelo'], $o7['hw_versao'], $o7['fornecedor'], $o7['estado']]);
@@ -86,15 +86,17 @@ T::igual('ONU 7: versao lida nos dois bancos', ['V9.0.11P1N52', 'V9.0.11P1N48'],
 $o9 = Db::um('SELECT sw_versao FROM tab_zte_onu WHERE olt_id = ? AND onu_num = 9', [$oid]);
 T::igual('ONU 9 (simulada ja atualizada): P3N10', 'V9.0.11P3N10', $o9['sw_versao']);
 $o2 = Db::um('SELECT * FROM tab_zte_onu WHERE olt_id = ? AND onu_num = 2', [$oid]);
-T::igual('Furukawa: SN e perfil lidos, modelo NAO (fora do escopo)', ['FRKW00000002', 'FRKW', 'HBR', null],
-    [$o2['sn'], $o2['fornecedor'], $o2['tipo_perfil'], $o2['modelo']]);
+T::igual('Furukawa: SN, perfil, modelo, HW e versao lidos pelo OMCI (saida real 05/10)',
+    ['FRKW00000002', 'FRKW', 'HBR', '630-10B', 'ZFK1.2A', 'V4.0.2', 'V4.0.2'],
+    [$o2['sn'], $o2['fornecedor'], $o2['tipo_perfil'], $o2['modelo'], $o2['hw_versao'], $o2['sw_versao'], $o2['sw_standby']]);
+T::igual('Furukawa lida continua fora do escopo de firmware', null, InventarioServico::desatualizada($o2, InventarioServico::alvos()));
 $o14 = Db::um('SELECT * FROM tab_zte_onu WHERE olt_id = ? AND onu_num = 14', [$oid]);
 T::igual('ONU offline (DyingGasp): estado e fase gravados, equip nao lido', ['offline', 'DyingGasp', null], [$o14['estado'], $o14['fase'], $o14['modelo']]);
 
 $r = InventarioServico::lerPon($oid, 1, 1, false, 'teste');
 T::igual('releitura rapida: nada novo e nenhum comando por ONU', [0, 0], [$r['novas'], $r['detalhes_lidos']]);
 $r = InventarioServico::lerPon($oid, 1, 1, true, 'teste');
-T::igual('leitura completa: rele todas', 49, $r['detalhes_lidos']);
+T::igual('leitura completa: rele todas', 53, $r['detalhes_lidos']);
 $r = InventarioServico::lerPon($oid, 1, 2, false, 'teste');
 T::igual('PON vazia', [0, 0], [$r['total'], $r['novas']]);
 
@@ -166,7 +168,7 @@ T::igual('filtro offline', 2, InventarioServico::listar(['estado' => 'offline', 
 T::igual('filtro modelo + HW', 21, InventarioServico::listar(['modelo' => 'F670LV9.0', 'hw' => 'V9.0', 'olt_id' => $oid], 1)['total']);
 T::igual('filtro por PON', 27, InventarioServico::listar(['pon' => '1/1', 'olt_id' => $oid], 1)['total']);
 T::igual('filtro por versao em uso', 5, InventarioServico::listar(['sw' => 'V9.0.11P3N10', 'olt_id' => $oid], 1)['total']);
-T::igual('filtro "versao nao lida" (offline e outro fabricante)', 6, InventarioServico::listar(['sw' => InventarioServico::SW_NAO_LIDA, 'olt_id' => $oid], 1)['total']);
+T::igual('filtro "versao nao lida" (so as ONUs offline: a Furukawa online tambem tem versao lida)', 2, InventarioServico::listar(['sw' => InventarioServico::SW_NAO_LIDA, 'olt_id' => $oid], 1)['total']);
 T::igual('opcoes de versao: a mais nova primeiro', ['V9.0.11P3N10', 'V9.0.11P1N52'],
     array_values(array_filter(InventarioServico::opcoesFiltro()['versoes'], fn($v) => str_starts_with($v, 'V9.0.11'))));
 T::igual('paginacao', 7, count(InventarioServico::listar(['olt_id' => $oid], 2, 20)['linhas']));
@@ -187,6 +189,20 @@ T::igual('snapshot gravado', 1, (int) Db::valor('SELECT COUNT(*) FROM tab_zte_on
 $topo = array_values(array_filter(InventarioServico::topologia(), fn($o) => $o['id'] === $oid))[0];
 T::igual('topologia: 1 PON com ONUs, 32 detectadas', [1, 32], [count($topo['pons']), count($topo['pons_detectadas'])]);
 T::igual('topologia: contagem da PON', [27, 25, 2, 23], [$topo['pons'][0]['total'], $topo['pons'][0]['online'], $topo['pons'][0]['offline'], $topo['pons'][0]['zte']]);
+$p0 = $topo['pons'][0];
+$zteP = (int) Db::valor('SELECT COUNT(*) FROM tab_zte_onu WHERE olt_id = ? AND slot = 1 AND porta = 1 AND ausente_desde IS NULL AND fornecedor = ?',
+    [$oid, InventarioServico::FORNECEDOR_ATUALIZAVEL]);
+T::igual('topologia: firmware soma as ONUs ZTE presentes', $zteP, array_sum($p0['firmware']));
+T::igual('topologia: modelos somam as ONUs ZTE presentes', $zteP, array_sum(array_column($p0['modelos'], 'n')));
+T::certo('topologia: versoes de cada modelo somam o modelo', array_reduce($p0['modelos'],
+    fn($ok, $m) => $ok && array_sum(array_column($m['versoes'], 'n')) === $m['n'], true));
+T::igual('topologia: fabricantes somam as presentes', $p0['total'] - $p0['ausentes'], array_sum(array_column($p0['fabricantes'], 'n')));
+T::certo('topologia: Furukawa entre os fabricantes da PON', in_array('FRKW', array_column($p0['fabricantes'], 'fornecedor'), true));
+T::certo('topologia: modelo da Furukawa so em modelos_outros', in_array('630-10B', array_column($p0['modelos_outros'], 'modelo'), true)
+    && !in_array('630-10B', array_column($p0['modelos'], 'modelo'), true));
+T::igual('topologia: ZTE + outros = presentes', $p0['total'] - $p0['ausentes'],
+    array_sum(array_column($p0['modelos'], 'n')) + array_sum(array_column($p0['modelos_outros'], 'n')));
+T::certo('topologia: ultimo teste da OLT exposto', array_key_exists('teste_resultado', $topo) && array_key_exists('teste_em', $topo));
 
 $p = InventarioServico::resumoPainel();
 $f670 = array_filter($p['modelos'], fn($m) => $m['modelo'] === 'F670LV9.0' && $m['hw'] === 'V9.0');

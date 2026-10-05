@@ -1,0 +1,22 @@
+OLT-c320_1#show gpon remote-onu equip gpon-onu_1/1/1:2
+Vendor ID:                 FRKW
+Version:                   ZFK1.2A
+SN:                        FRKW00000002
+Admin status:              unlock
+Battery monitor:           false
+Security mode:             aes
+Product code:              0
+Total priority queue num:  120
+Total traffic schedule num:15
+Traffic management option: priority-rate-controlled
+Operate status:            enable
+Equipment ID:              630-10B
+OMCC version:              a0
+Security capability:       aes
+Model:                     630-10B
+Survival time:             N/A
+Total GEM port num:        256
+System uptime:             0
+Region code:               N/A
+Product SN:                N/A
+Chip info:                 0

@@ -20,6 +20,8 @@ Anonimizadas: nome de cliente, SN e IP foram trocados mantendo exatamente o form
 | show_remote_unit_information.txt | `show remote-unit information gpon-olt_1/1/1 1` — **versão de software**: 2 bancos (Region), o ativo é o "Activated: Yes" |
 | ajuda_rodada4.txt | rodada 4: `?` do remote-unit information, `remote-onu model`, `sys-attr` |
 | show_remote_unit_information_lista.txt | `show remote-unit information gpon-olt_1/1/1 1-5` — **forma em lista** (inclui Furukawa; ONU 4 com banco 2 ativo) |
+| show_gpon_remote_onu_equip_furukawa.txt | `show gpon remote-onu equip gpon-onu_1/1/1:2` numa **Furukawa 630-10B** (05/10): o OMCI responde; "Version" = HW `ZFK1.2A` |
+| show_remote_unit_information_furukawa.txt | `show remote-unit information gpon-olt_1/1/1 2` na mesma Furukawa (05/10): RuType 630-10B, `V4.0.2` nos dois bancos |
 | ajuda_upgrade_rodada5.txt | rodada 5: sintaxe do `file download version-ru` (senha na linha!), `remote-unit task/summary-of/update-status` |
 | ajuda_ru_task_rodada6.txt | rodada 6: comandos do modo `remote-unit task` (o procedimento de upgrade) |
 | ajuda_manual_rodada7.txt | rodada 7: `remote-unit ?` em EXEC = atualização MANUAL por ONU (update/activate/commit/abort) |

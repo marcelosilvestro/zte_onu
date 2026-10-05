@@ -1,0 +1,14 @@
+OLT-c320_1#show remote-unit information gpon-olt_1/1/1 2
+gpon-onu_1/1/1: 2
+RuVendorName : FRKW
+RuType       : 630-10B
+Region 1
+Vertag        : V4.0.2
+Commited      : Yes
+Activated     : Yes
+Valid         : Yes
+Region 2
+Vertag        : V4.0.2
+Commited      : No
+Activated     : No
+Valid         : Yes

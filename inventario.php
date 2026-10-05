@@ -110,7 +110,14 @@ $zte_pode_avulso = $zte_schema_ok && Permissao::tem('onu.atualizar_avulso');
     }
 
     function modelo(o) {
-        if (!o.atualizavel) return '<span class="zte-sub">' + ZTE.esc(o.fornecedor || '?') + ' · fora do escopo</span>';
+        if (!o.atualizavel) {
+            // Outro fabricante: modelo/versao lidos so para consulta.
+            return (o.modelo ? ZTE.esc(o.modelo) + ' <span class="zte-sub">· ' + ZTE.esc(o.hw_versao || '?') + '</span>'
+                             : '<span class="zte-sub">' + ZTE.esc(o.fornecedor || '?') + '</span>') +
+                '<div>' + (o.sw_versao ? '<span class="zte-mono">' + ZTE.esc(o.sw_versao) + '</span> ' : '') +
+                '<span class="zte-res nao_testavel" title="Fabricante ' + ZTE.esc(o.fornecedor || '?') + ': lido para consulta, nunca atualizado">' +
+                ZTE.esc(o.fornecedor || '?') + ' · só leitura</span></div>';
+        }
         var m = o.modelo ? ZTE.esc(o.modelo) + ' <span class="zte-sub">· ' + ZTE.esc(o.hw_versao || '?') + '</span>' : '<span class="zte-sub">modelo não lido</span>';
         return m + '<div><span class="zte-mono">' + ZTE.esc(o.sw_versao || '—') + '</span>' + versaoSelo(o) + '</div>';
     }
@@ -213,7 +220,7 @@ $zte_pode_avulso = $zte_schema_ok && Permissao::tem('onu.atualizar_avulso');
                 ln('Perfil na OLT', ZTE.esc(o.tipo_perfil || '—')) +
                 ln('Modelo · HW', ZTE.esc((o.modelo || '—') + ' · ' + (o.hw_versao || '—'))) +
                 ln('Versão em uso', o.sw_versao ? '<span class="zte-mono">' + ZTE.esc(o.sw_versao) + '</span>' + versaoSelo(o)
-                                                : '<span class="zte-sub">' + (o.atualizavel ? (o.estado === 'online' ? 'ainda não lida' : 'não lida (ONU offline)') : 'não lida (fora do escopo)') + '</span>') +
+                                                : '<span class="zte-sub">' + (o.estado === 'online' ? 'ainda não lida' : 'não lida (ONU offline)') + '</span>') +
                 ln('Outro banco', o.sw_standby ? '<span class="zte-mono">' + ZTE.esc(o.sw_standby) + '</span> <span class="zte-sub">imagem anterior, inativa</span>' : '—') +
                 ln('Versão lida em', ZTE.dataHora(o.sw_lido_em)) +
                 ln('Firmwares compatíveis', fws) +
