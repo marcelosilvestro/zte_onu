@@ -8,7 +8,7 @@
  *
  * Os quatro estados da conectividade OLT -> FTP, sem nunca presumir sucesso:
  *   potencial     a OLT alcanca o endereco do FTP (ping a partir da OLT)
- *   validado      a OLT baixou um arquivo de fato — ⏳ exige o comando de download validado
+ *   validado      a OLT baixou um arquivo de fato (upgrade real concluido); o teste nao rebaixa
  *   desconhecido  nao deu para concluir (ping sem resposta pode ser so ICMP bloqueado)
  *   nao_testavel  o driver nao tem como testar
  */
@@ -139,9 +139,19 @@ final class VinculoServico
                     'Não foi possível usar a OLT para o teste: ' . $z->getMessage() . ($tec ? ' (' . $tec . ')' : ''), $t);
             }
         }
-        $etapas[] = RepoServico::etapa('download', 'OLT baixa um arquivo do FTP', 'nao_testavel',
-            'Não testável nesta versão: o comando de download pela OLT (file download version-ru) ainda não foi validado na OLT real. '
-            . 'O acesso só fica comprovado no primeiro upgrade, feito em 1 ONU no modo seguro.', microtime(true));
+        // Um upgrade real ja comprovou o download: o ping nunca rebaixa essa prova (rebaixar faz a
+        // proxima rodada da recorrente exigir ciencia de novo e ser recusada).
+        $prova = self::comprovacao($v);
+        if ($prova !== null || $v['estado_conectividade'] === 'validado') {
+            $estado = 'validado';
+            $etapas[] = RepoServico::etapa('download', 'OLT baixa um arquivo do FTP', 'ok', $prova !== null
+                ? 'Comprovado: a OLT baixou ' . $prova['nome_remoto'] . ' e a ONU concluiu a atualização (job ' . $prova['id'] . ', ' . $prova['concluido_em'] . ').'
+                : ($v['estado_detalhe'] ?: 'Comprovado por um upgrade real.'), microtime(true));
+        } else {
+            $etapas[] = RepoServico::etapa('download', 'OLT baixa um arquivo do FTP', 'nao_testavel',
+                'Não testável nesta versão: o comando de download pela OLT (file download version-ru) ainda não foi validado na OLT real. '
+                . 'O acesso só fica comprovado no primeiro upgrade, feito em 1 ONU no modo seguro.', microtime(true));
+        }
 
         $resumo = implode(' | ', array_map(fn($e) => $e['titulo'] . ': ' . $e['detalhe'],
                     array_filter($etapas, fn($e) => $e['resultado'] !== 'ok')));
@@ -153,6 +163,29 @@ final class VinculoServico
         });
         return ['estado' => $estado, 'etapas' => $etapas, 'correlacao' => $correlacao,
                 'resultado' => Diagnostico::pior(array_filter($etapas, fn($e) => $e['resultado'] !== 'nao_testavel'))];
+    }
+
+    /**
+     * Ultimo upgrade concluido numa OLT real com firmware deste repositorio, depois da ultima
+     * edicao do acesso (editar volta o estado a desconhecido). Mesma prova que o worker usa.
+     * @return array{id:int,concluido_em:string,nome_remoto:string}|null
+     */
+    public static function comprovacao(array $v): ?array
+    {
+        $j = Db::um("SELECT j.id, j.concluido_em, f.nome_remoto
+                       FROM tab_zte_job j
+                       JOIN tab_zte_campanha c ON c.id = j.campanha_id
+                       JOIN tab_zte_firmware f ON f.id = c.firmware_id
+                       JOIN tab_zte_olt o ON o.id = c.olt_id
+                      WHERE c.olt_id = ? AND f.repositorio_id = ? AND j.estado = 'concluido' AND o.protocolo <> 'simulado'
+                        AND j.concluido_em >= ?
+                   ORDER BY j.concluido_em DESC LIMIT 1",
+            [(int) $v['olt_id'], (int) $v['repositorio_id'], $v['alterado_em'] ?? $v['criado_em']]);
+        if ($j === null) {
+            return null;
+        }
+        $j['id'] = (int) $j['id'];
+        return $j;
     }
 
     public static function linha(int $id): array

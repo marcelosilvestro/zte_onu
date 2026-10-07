@@ -83,6 +83,21 @@ T::igual('campanha avulsa concluida', 'concluida', CampanhaServico::linha($c['id
 T::igual('OLT simulada nunca "comprova" o acesso ao FTP', $vin['estado_conectividade'],
     Db::valor('SELECT estado_conectividade FROM tab_zte_olt_repositorio WHERE id = ?', [$vin['id']]));
 
+// Producao 07/10: "Testar acesso" regravou 'validado' como 'potencial' e a rodada seguinte da
+// recorrente (aprovada sem ciencia) seria recusada. O teste nao rebaixa e reconhece a prova real.
+T::igual('comprovacao: job concluido em OLT simulada nao conta', null, VinculoServico::comprovacao(VinculoServico::linha((int) $vin['id'])));
+Db::exec("UPDATE tab_zte_olt SET protocolo = 'telnet' WHERE id = ?", [$oid]);
+$prova = VinculoServico::comprovacao(VinculoServico::linha((int) $vin['id']));
+Db::exec("UPDATE tab_zte_olt SET protocolo = 'simulado' WHERE id = ?", [$oid]);
+T::igual('comprovacao: job concluido em OLT real com firmware do repositorio conta', (int) $j['id'], $prova['id'] ?? null);
+$estadoVin = Db::um('SELECT estado_conectividade, estado_detalhe FROM tab_zte_olt_repositorio WHERE id = ?', [$vin['id']]);
+Db::exec("UPDATE tab_zte_olt_repositorio SET estado_conectividade = 'validado', estado_detalhe = 'Comprovado: teste.' WHERE id = ?", [$vin['id']]);
+$t = VinculoServico::testar((int) $vin['id'], 'teste');
+T::igual('testar acesso nao rebaixa um acesso ja validado', ['validado', 'validado', 'ok'],
+    [$t['estado'], VinculoServico::linha((int) $vin['id'])['estado_conectividade'], array_column($t['etapas'], 'resultado', 'etapa')['download']]);
+Db::exec('UPDATE tab_zte_olt_repositorio SET estado_conectividade = ?, estado_detalhe = ? WHERE id = ?',
+    [$estadoVin['estado_conectividade'], $estadoVin['estado_detalhe'], $vin['id']]);
+
 $lj = array_values(array_filter(JobServico::listar(['campanha_id' => $c['id']], 1)['linhas'], fn($x) => (int) $x['id'] === (int) $j['id']))[0];
 T::igual('Fila: cada job mostra a versao de origem e o alvo DAQUELA tentativa', ['V9.0.11P1N52', 'V9.0.11P3N10'], [$lj['sw_inicial'], $lj['sw_alvo']]);
 
